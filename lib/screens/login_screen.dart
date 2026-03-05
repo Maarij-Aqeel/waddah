@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'signup_screen.dart';
 import 'main_dashboard.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -213,7 +214,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: AlignmentDirectional.centerEnd,
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ForgotPasswordScreen(),
+                                ),
+                              );
+                            },
                             style: TextButton.styleFrom(
                               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
                               minimumSize: Size.zero,

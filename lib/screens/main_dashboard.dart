@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'progress_screen.dart';
 
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
@@ -19,7 +20,7 @@ class _MainDashboardState extends State<MainDashboard> {
       case 1:
         return const MapScreen(); // The main interactive map view
       case 2:
-        return const Center(child: Text('الميداليات (Medals) Placeholder'));
+        return const ProgressScreen();
       default:
         return const MapScreen();
     }
@@ -259,12 +260,18 @@ class MapScreen extends StatelessWidget {
         Positioned(
           right: MediaQuery.of(context).size.width * 0.15,
           top: MediaQuery.of(context).size.height * 0.45,
-          child: _buildMapNode(
-            icon: Icons.play_arrow_rounded,
-            number: '1',
-            label: 'آداب المترو',
-            color: const Color(0xFF9d4edd), // Purple
-            isLocked: false,
+          child: GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProgressScreen()),
+            ),
+            child: _buildMapNode(
+              icon: Icons.play_arrow_rounded,
+              number: '1',
+              label: 'آداب المترو',
+              color: const Color(0xFF9d4edd), // Purple
+              isLocked: false,
+            ),
           ),
         ),
 
@@ -272,12 +279,18 @@ class MapScreen extends StatelessWidget {
         Positioned(
           left: MediaQuery.of(context).size.width * 0.1,
           top: MediaQuery.of(context).size.height * 0.55,
-          child: _buildMapNode(
-            icon: Icons.lock_outline,
-            label: 'كيف أتنقل',
-            color: const Color(0xFF1565C0), // Blue
-            isLocked: true,
-            isSecondaryColorText: true, // Blue has white text inside blue pill
+          child: GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProgressScreen()),
+            ),
+            child: _buildMapNode(
+              icon: Icons.lock_outline,
+              label: 'كيف أتنقل',
+              color: const Color(0xFF1565C0), // Blue
+              isLocked: true,
+              isSecondaryColorText: true, // Blue has white text inside blue pill
+            ),
           ),
         ),
 
@@ -285,13 +298,19 @@ class MapScreen extends StatelessWidget {
         Positioned(
           right: MediaQuery.of(context).size.width * 0.35,
           bottom: MediaQuery.of(context).size.height * 0.2, // Adjusting bottom padding explicitly
-          child: _buildMapNode(
-            icon: Icons.lock_outline,
-            label: 'ماذا أفعل\nعند الضياع',
-            color: const Color(0xFF2E7D32), // Dark Green
-            isLocked: true,
-            isSecondaryColorText: true, // Green has white text inside green pill
-            multilineLabel: true,
+          child: GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProgressScreen()),
+            ),
+            child: _buildMapNode(
+              icon: Icons.lock_outline,
+              label: 'ماذا أفعل\nعند الضياع',
+              color: const Color(0xFF2E7D32), // Dark Green
+              isLocked: true,
+              isSecondaryColorText: true, // Green has white text inside green pill
+              multilineLabel: true,
+            ),
           ),
         ),
       ],
