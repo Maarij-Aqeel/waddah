@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'progress_screen.dart';
+import 'map_viewer_screen.dart';
+import 'profile_screen.dart';
 
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
@@ -85,9 +88,16 @@ class _MainDashboardState extends State<MainDashboard> {
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _currentIndex = index;
-        });
+        if (index == 0) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MapViewerScreen()),
+          );
+        } else {
+          setState(() {
+            _currentIndex = index;
+          });
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -217,36 +227,44 @@ class MapScreen extends StatelessWidget {
                 ),
 
                 // User Profile Pill
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black12, blurRadius: 8),
-                    ],
-                    border: Border.all(color: const Color(0xFFe0aaff), width: 1.5),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        '👋 مرحباً',
-                        style: GoogleFonts.cairo(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF9d4edd),
-                          fontSize: 14,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black12, blurRadius: 8),
+                      ],
+                      border: Border.all(color: const Color(0xFFe0aaff), width: 1.5),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          '👋 مرحباً',
+                          style: GoogleFonts.cairo(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF9d4edd),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Noura khalid',
-                        style: GoogleFonts.cairo(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF9d4edd),
-                          fontSize: 14,
+                        const SizedBox(width: 4),
+                        Text(
+                          FirebaseAuth.instance.currentUser?.displayName ?? 'Noura khalid',
+                          style: GoogleFonts.cairo(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF9d4edd),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
