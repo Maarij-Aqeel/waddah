@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'progress_screen.dart';
 import 'map_viewer_screen.dart';
 import 'profile_screen.dart';
+import 'node_progress_screen.dart';
 
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
@@ -281,7 +282,7 @@ class MapScreen extends StatelessWidget {
           child: GestureDetector(
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const ProgressScreen()),
+              MaterialPageRoute(builder: (context) => const NodeProgressScreen(nodeTitle: 'آداب المترو')),
             ),
             child: _buildMapNode(
               icon: Icons.play_arrow_rounded,
@@ -300,7 +301,7 @@ class MapScreen extends StatelessWidget {
           child: GestureDetector(
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const ProgressScreen()),
+              MaterialPageRoute(builder: (context) => const NodeProgressScreen(nodeTitle: 'كيف أتنقل')),
             ),
             child: _buildMapNode(
               icon: Icons.lock_outline,
@@ -319,7 +320,7 @@ class MapScreen extends StatelessWidget {
           child: GestureDetector(
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const ProgressScreen()),
+              MaterialPageRoute(builder: (context) => const NodeProgressScreen(nodeTitle: 'ماذا أفعل عند الضياع')),
             ),
             child: _buildMapNode(
               icon: Icons.lock_outline,
