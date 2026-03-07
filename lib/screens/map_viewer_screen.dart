@@ -292,18 +292,104 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildLegendItem(label: 'الخط البنفسجي', color: const Color(0xFFA855F7)), // Purple
-                          _buildLegendItem(label: 'الخط الأصفر', color: const Color(0xFFF59E0B)),  // Yellow
-                          _buildLegendItem(label: 'الخط الأزرق', color: const Color(0xFF3B82F6)),  // Blue
+                          _buildLegendItem(
+                            label: 'الخط البنفسجي',
+                            color: const Color(0xFFA855F7), // Purple
+                            onTap: () => _showLineInfoDialog(
+                              context,
+                              'الخط البنفسجي',
+                              const Color(0xFFA855F7),
+                              'يمتد بين طريق عبدالرحمن بن عوف و النسيم',
+                              [
+                                'الروابي',
+                                'النسيم',
+                              ],
+                            ),
+                          ),
+                          _buildLegendItem(
+                            label: 'الخط الأصفر',
+                            color: const Color(0xFFF59E0B),  // Yellow
+                            onTap: () => _showLineInfoDialog(
+                              context,
+                              'الخط الأصفر',
+                              const Color(0xFFF59E0B),
+                              'يمتد بين مركز الملك عبدالله المالي (كافد) و مطار الملك خالد الدولي',
+                              [
+                                'مركز الملك عبدالله المالي (كافد)',
+                                'غرناطة',
+                                'مطار الملك خالد الدولي',
+                              ],
+                            ),
+                          ),
+                          _buildLegendItem(
+                            label: 'الخط الأزرق',
+                            color: const Color(0xFF3B82F6),  // Blue
+                            onTap: () => _showLineInfoDialog(
+                              context,
+                              'الخط الأزرق',
+                              const Color(0xFF3B82F6),
+                              'يمتد بين مركز الملك عبدالله المالي (كافد) و الحاير',
+                              [
+                                'مركز الملك عبدالله المالي (كافد)',
+                                'جامعة الملك سعود',
+                                'العليا',
+                                'قصر الحكم',
+                                'البطحاء',
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildLegendItem(label: 'الخط الأحمر', color: const Color(0xFFEF4444)), // Red
-                          _buildLegendItem(label: 'الخط البرتقالي', color: const Color(0xFFF97316)), // Orange
-                          _buildLegendItem(label: 'الخط الأخضر', color: const Color(0xFF10B981)), // Green
+                          _buildLegendItem(
+                            label: 'الخط الأحمر',
+                            color: const Color(0xFFEF4444), // Red
+                            onTap: () => _showLineInfoDialog(
+                              context,
+                              'الخط الأحمر',
+                              const Color(0xFFEF4444),
+                              'يمتد بين جامعة الملك سعود و استاد الملك فهد',
+                              [
+                                'جامعة الملك سعود',
+                                'وزارة التعليم',
+                                'غرناطة',
+                                'استاد الملك فهد',
+                              ],
+                            ),
+                          ),
+                          _buildLegendItem(
+                            label: 'الخط البرتقالي',
+                            color: const Color(0xFFF97316), // Orange
+                            onTap: () => _showLineInfoDialog(
+                              context,
+                              'الخط البرتقالي',
+                              const Color(0xFFF97316),
+                              'يمتد بين ظهرة البديعة و النسيم',
+                              [
+                                'ظهرة البديعة',
+                                'قصر الحكم',
+                                'النسيم',
+                              ],
+                            ),
+                          ),
+                          _buildLegendItem(
+                            label: 'الخط الأخضر',
+                            color: const Color(0xFF10B981), // Green
+                            onTap: () => _showLineInfoDialog(
+                              context,
+                              'الخط الأخضر',
+                              const Color(0xFF10B981),
+                              'يمتد بين وزارة الدفاع و الملز',
+                              [
+                                'وزارة الدفاع',
+                                'قصر الحكم',
+                                'الملز',
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -340,28 +426,207 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
   }
 
   // To properly render the text on the right and line on the left or top-line style
-  Widget _buildLegendItem({required String label, required Color color}) {
-    // According to the image, the color line is displayed above the text
-    return Column(
-      children: [
-        Container(
-          width: 32,
-          height: 6,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(3),
-          ),
+  Widget _buildLegendItem({required String label, required Color color, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        color: Colors.transparent, // Ensure gesture area hits
+        padding: const EdgeInsets.all(4.0),
+        child: Column(
+          children: [
+            Container(
+              width: 32,
+              height: 6,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: GoogleFonts.cairo(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: const Color(0xFF333333),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: GoogleFonts.cairo(
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
-            color: const Color(0xFF333333),
+      ),
+    );
+  }
+
+  void _showLineInfoDialog(BuildContext context, String title, Color color, String startEnd, List<String> stations) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32.0),
           ),
-        ),
-      ],
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0,
+                  offset: Offset(0.0, 10.0),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Compact
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                // Line visual identifier
+                Center(
+                  child: Container(
+                    width: 60,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.4),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // Title
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cairo(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // Info Section: start-end
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9), // Light slaty background
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    startEnd,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.cairo(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF475569),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+
+                // Stations label
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'أشهر المحطات:',
+                      style: GoogleFonts.cairo(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1E293B),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.directions_subway, color: color, size: 24),
+                  ],
+                ),
+                const SizedBox(height: 12.0),
+
+                // Stations List
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 180), // Don't let list get too long
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: stations.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                stations[index],
+                                textAlign: TextAlign.right,
+                                style: GoogleFonts.cairo(
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF334155),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Station node dot
+                            Container(
+                              margin: const EdgeInsets.only(top: 4),
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: color, width: 3),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+
+                // Dismiss Button
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  borderRadius: BorderRadius.circular(24),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Text(
+                      'إغلاق',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.cairo(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
