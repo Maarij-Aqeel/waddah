@@ -170,8 +170,12 @@ class FeedbackScreen extends StatelessWidget {
                           ),
                           child: Text(
                             'إعادة اللعب',
-                            style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
+                            style: GoogleFonts.cairo(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white, 
+                            ),
+                            )
                         ),
                       ),
                     ],
