@@ -225,7 +225,6 @@ class VideoPlayerScreen extends StatelessWidget {
                             _buildStepPill(number: '1', text: 'الالتزام بالانتظار المنظم وعدم المزاحمة'),
                             _buildStepPill(number: '2', text: 'إظهار الاحترام لكبار السن داخل المترو'),
                             _buildStepPill(number: '3', text: 'المحافظة على الهدوء والنظافة أثناء الرحلة'),
-                            _buildStepPill(number: '4', text: 'اخبر الآخرين في الانتظار'),
                           ],
                         ),
                       ),
