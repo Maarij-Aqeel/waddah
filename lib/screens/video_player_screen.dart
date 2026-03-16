@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'quiz_screen.dart';
 
 class VideoPlayerScreen extends StatelessWidget {
   final String videoTitle;
@@ -291,8 +292,16 @@ class VideoPlayerScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: InkWell(
                   onTap: () {
-                    // Completing logic would go here
-                    Navigator.pop(context);
+                    // Quiz page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizScreen(
+                          stageKey: 'aedab',
+                          stageTitle: videoTitle,
+                        ),
+                      ),
+                    );
                   },
                   borderRadius: BorderRadius.circular(24),
                   child: Container(
@@ -328,7 +337,12 @@ class VideoPlayerScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+
+              const SizedBox(height: 12),
+
+              
+
+              // const SizedBox(height: 24),
             ],
           ),
         ),

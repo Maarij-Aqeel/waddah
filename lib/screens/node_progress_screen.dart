@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'main_dashboard.dart'; // To allow returning to map
 import 'lesson_videos_screen.dart';
+import 'quiz_screen.dart';
 
 class NodeProgressScreen extends StatelessWidget {
   final String nodeTitle;
@@ -247,21 +248,32 @@ class NodeProgressScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
 
-                            // 2. Quiz (Locked)
+                            // 2. Quiz (Unlocked)
                             GestureDetector(
-                              onTap: () => _showLockedDialog(context),
+                              onTap: () {
+                                final stageKey = _stageKeyFromTitle(nodeTitle);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => QuizScreen(
+                                      stageKey: stageKey,
+                                      stageTitle: nodeTitle,
+                                    ),
+                                  ),
+                                );
+                              },
                               child: _buildTaskItem(
                                 number: '2',
                                 title: 'الاختبار',
-                                subtitle: 'مقفل 🔒',
+                                subtitle: 'ابدأ الآن',
                                 icon: Icons.help_outline_rounded,
-                                iconBgColor: const Color(0xFFF1F5F9),
-                                iconColor: const Color(0xFF94A3B8),
-                                pillColor: const Color(0xFFB794F6), // Lighter purple for locked
-                                cardBgColor: const Color(0xFFF8FAF9), // Light greenish-grey tint
-                                borderColor: const Color(0xFFE2E8F0).withValues(alpha: 0.5),
-                                isLocked: true,
-                                subtitleColor: const Color(0xFF94A3B8),
+                                iconBgColor: const Color(0xFFE8F5E9),
+                                iconColor: const Color(0xFF00C853),
+                                pillColor: const Color(0xFF00C853),
+                                cardBgColor: Colors.white,
+                                borderColor: const Color(0xFF00C853).withValues(alpha: 0.25),
+                                isLocked: false,
+                                subtitleColor: const Color(0xFF00C853),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -358,6 +370,19 @@ class NodeProgressScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _stageKeyFromTitle(String title) {
+    switch (title) {
+      case 'آداب المترو':
+        return 'aedab';
+      case 'كيف أتنقل':
+        return 'travel';
+      case 'ماذا أفعل عند الضياع':
+        return 'lost';
+      default:
+        return 'aedab';
+    }
   }
 
   Widget _buildTaskItem({
