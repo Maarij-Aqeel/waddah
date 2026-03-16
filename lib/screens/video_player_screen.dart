@@ -147,7 +147,7 @@ class VideoPlayerScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '0:00 / 2:30',
+                                      '0:00 / 1:30',
                                       style: GoogleFonts.roboto(
                                         color: Colors.white,
                                         fontSize: 12,
@@ -204,7 +204,7 @@ class VideoPlayerScreen extends StatelessWidget {
                           const Icon(Icons.track_changes, color: Color(0xFFE53935)), // Red target icon mock
                           const SizedBox(width: 8),
                           Text(
-                            'النقاط الأساسية',
+                            'نقاط اساسية',
                             style: GoogleFonts.cairo(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -218,11 +218,13 @@ class VideoPlayerScreen extends StatelessWidget {
                       // List of rules (Scrollable if needed)
                       Expanded(
                         child: ListView(
+
+
                           physics: const BouncingScrollPhysics(),
                           children: [
-                            _buildStepPill(number: '1', text: 'قف خلف الخط الأصفر'),
-                            _buildStepPill(number: '2', text: 'لا تركض على الرصيف'),
-                            _buildStepPill(number: '3', text: 'انتظر بهدوء وصبر'),
+                            _buildStepPill(number: '1', text: 'الالتزام بالانتظار المنظم وعدم المزاحمة'),
+                            _buildStepPill(number: '2', text: 'إظهار الاحترام لكبار السن داخل المترو'),
+                            _buildStepPill(number: '3', text: 'المحافظة على الهدوء والنظافة أثناء الرحلة'),
                             _buildStepPill(number: '4', text: 'اخبر الآخرين في الانتظار'),
                           ],
                         ),
@@ -334,49 +336,51 @@ class VideoPlayerScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildStepPill({required String number, required String text}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9), // Light green tint
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
+Widget _buildStepPill({required String number, required String text}) {
+  return Container(
+    margin: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    decoration: BoxDecoration(
+      color: const Color(0xFFE8F5E9),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Text(
             text,
             textAlign: TextAlign.right,
+            softWrap: true,
             style: GoogleFonts.cairo(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF1E293B),
             ),
           ),
-          const SizedBox(width: 16),
-          // Number indicator
-          Container(
-            width: 32,
-            height: 32,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                number,
-                style: GoogleFonts.cairo(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF00C853),
-                ),
+        ),
+        const SizedBox(width: 16),
+
+        Container(
+          width: 32,
+          height: 32,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              number,
+              style: GoogleFonts.cairo(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF00C853),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

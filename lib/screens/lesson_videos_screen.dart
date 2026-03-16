@@ -153,10 +153,9 @@ class LessonVideosScreen extends StatelessWidget {
                     // Video 1
                     _buildVideoCard(
                       context: context,
-                      title: 'كيف أنتظر القطار بأدب',
-                      subtitle: 'تعلم الطريقة الصحيحة للوقوف\nوالانتظار',
-                      duration: '2:30',
-                      stars: '15',
+                      title: 'آداب المترو',
+                      duration: '1:30',
+                      stars: '35',
                       onTap: () {
                         Navigator.push(
                           context,
@@ -171,25 +170,6 @@ class LessonVideosScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Video 2
-                    _buildVideoCard(
-                      context: context,
-                      title: 'الصعود والنزول من القطار',
-                      subtitle: 'تعلم كيف تصعد وتنزل بأمان',
-                      duration: '3:15',
-                      stars: '20',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const VideoPlayerScreen(
-                              videoTitle: 'الصعود والنزول من القطار',
-                              starsReward: 20,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),
@@ -203,7 +183,7 @@ class LessonVideosScreen extends StatelessWidget {
   Widget _buildVideoCard({
     required BuildContext context,
     required String title,
-    required String subtitle,
+    String subtitle="",
     required String duration,
     required String stars,
     required VoidCallback onTap,

@@ -540,7 +540,7 @@ class NodeProgressScreen extends StatelessWidget {
 
                 // Title
                 Text(
-                  'اللعبة مغلقة!',
+                  'الاختبار مغلق!',
                   style: GoogleFonts.cairo(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -551,7 +551,7 @@ class NodeProgressScreen extends StatelessWidget {
 
                 // Subtitle
                 Text(
-                  'يجب عليك إكمال الاختبار للوصول إلى اللعبة',
+                  'يجب عليك إكمال الدرس للوصول إلى الاختبار',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.cairo(
                     fontSize: 16.0,
