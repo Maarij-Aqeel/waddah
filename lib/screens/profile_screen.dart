@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login_screen.dart';
 import 'personal_info_screen.dart';
 
@@ -12,8 +13,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Mock Data
-  final String userName = FirebaseAuth.instance.currentUser?.displayName ?? 'jori';
   int _selectedAvatarIndex = 0;
 
   final List<Map<String, String>> avatars = [
@@ -48,9 +47,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      return const Scaffold(body: Center(child: Text('يرجى تسجيل الدخول أولاً')));
+    }
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance.collection('users').doc(currentUser.uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        final userDoc = snapshot.data?.data() ?? {};
+        final userName = userDoc['displayName'] as String? ?? currentUser.displayName ?? 'طالب';
+        final stars = userDoc['stars'] as int? ?? 0;
+        final selectedAvatarIndex = userDoc['avatarIndex'] as int? ?? _selectedAvatarIndex;
+        final completedStages = (userDoc['completedStages'] as Map<String, dynamic>?) ?? {};
+        final tasksCompleted = completedStages.length;
+        final taskTotal = 3;
+        final progressPercent = taskTotal > 0 ? ((tasksCompleted / taskTotal) * 100).round() : 0;
+
+        return Scaffold(
+          body: Container(
+            decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -125,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            avatars[_selectedAvatarIndex]['emoji']!,
+                            avatars[(userDoc['avatarIndex'] as int?) ?? _selectedAvatarIndex]['emoji']!,
                             style: const TextStyle(fontSize: 48),
                           ),
                         ),
@@ -148,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '0%',
+                            '$progressPercent%',
                             style: GoogleFonts.cairo(
                               color: const Color(0xFF00C853),
                               fontWeight: FontWeight.bold,
@@ -179,14 +199,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           _buildStatCard(
                             label: 'النجوم',
-                            value: '0',
+                            value: '$stars',
                             iconWidget: const Icon(Icons.star_border_rounded, color: Color(0xFFffb703), size: 32),
                             bgColor: const Color(0xFFFFF9C4), // Light Yellow
                           ),
                           const SizedBox(width: 8),
                           _buildStatCard(
                             label: 'ميداليات',
-                            value: '', // It shows small medal inside icon in image, leaving text blank
+                            value: '$tasksCompleted',
                             iconWidget: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -210,7 +230,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(width: 8),
                           _buildStatCard(
                             label: 'المهام',
-                            value: '0/9',
+                            value: '$tasksCompleted/$taskTotal',
                             iconWidget: const Icon(Icons.track_changes, color: Color(0xFF00C853), size: 32),
                             bgColor: const Color(0xFFE8F5E9), // Light Green
                             valueColor: const Color(0xFF00C853),
@@ -259,12 +279,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         itemCount: avatars.length,
                         itemBuilder: (context, index) {
-                          final isSelected = _selectedAvatarIndex == index;
+                          final isSelected = selectedAvatarIndex == index;
                           return GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               setState(() {
                                 _selectedAvatarIndex = index;
                               });
+                              await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).set({
+                                'avatarIndex': index,
+                              }, SetOptions(merge: true));
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
@@ -412,7 +435,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
-  }
+  });
+    }
 
   // Helper widget for the 3 top stats
   Widget _buildStatCard({

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'feedback_screen.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -110,7 +112,25 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
-  void _nextQuestion() {
+  Future<void> _saveQuizProgress() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    await userDoc.set({
+      'stars': FieldValue.increment(earnedStars),
+      'completedStages': {
+        widget.stageKey: {
+          'correctAnswers': _correctCount,
+          'totalQuestions': _questions.length,
+          'earnedStars': earnedStars,
+          'completedAt': FieldValue.serverTimestamp(),
+        }
+      }
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> _nextQuestion() async {
     if (_selectedOption == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -125,6 +145,8 @@ class _QuizScreenState extends State<QuizScreen> {
     }
 
     if (_currentIndex == _questions.length - 1) {
+      await _saveQuizProgress();
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

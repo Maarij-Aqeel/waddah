@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'progress_screen.dart';
 import 'map_viewer_screen.dart';
 import 'profile_screen.dart';
@@ -16,65 +17,81 @@ class MainDashboard extends StatefulWidget {
 class _MainDashboardState extends State<MainDashboard> {
   int _currentIndex = 1; // Default to 'Home' (Middle tab)
 
-  // This will handle the body switching later when we add more pages
-  Widget _buildBody() {
+  Widget _buildBody(Map<String, dynamic>? userData) {
     switch (_currentIndex) {
       case 0:
         return const Center(child: Text('الخريطة (Map Full View) Placeholder'));
       case 1:
-        return const MapScreen(); // The main interactive map view
+        return MapScreen(userData: userData);
       case 2:
         return const ProgressScreen();
       default:
-        return const MapScreen();
+        return MapScreen(userData: userData);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildBody(),
-      backgroundColor: Colors.white,
-      // Custom floating bottom navigation bar
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, -2),
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      return const Scaffold(body: Center(child: Text('يجب تسجيل الدخول')));
+    }
+
+    final userDocStream = FirebaseFirestore.instance.collection('users').doc(currentUser.uid).snapshots();
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: userDocStream,
+      builder: (context, snapshot) {
+        Map<String, dynamic>? userData;
+        if (snapshot.hasData && snapshot.data!.data() != null) {
+          userData = snapshot.data!.data();
+        }
+
+        return Scaffold(
+          body: _buildBody(userData),
+          backgroundColor: Colors.white,
+          // Custom floating bottom navigation bar
+          bottomNavigationBar: SafeArea(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
+                ],
               ),
-            ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNavItem(
+                    index: 0,
+                    title: 'الخريطة',
+                    icon: Icons.map_outlined,
+                    color: const Color(0xFF00C853), // Green
+                  ),
+                  _buildNavItem(
+                    index: 1,
+                    title: '',
+                    icon: Icons.home_outlined,
+                    color: const Color(0xFF9d4edd), // Purple
+                    isHome: true,
+                  ),
+                  _buildNavItem(
+                    index: 2,
+                    title: 'الميداليات',
+                    icon: Icons.emoji_events_outlined,
+                    color: const Color(0xFFffb703), // Yellow/Orange
+                  ),
+                ],
+              ),
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(
-                index: 0,
-                title: 'الخريطة',
-                icon: Icons.map_outlined,
-                color: const Color(0xFF00C853), // Green
-              ),
-              _buildNavItem(
-                index: 1,
-                title: '',
-                icon: Icons.home_outlined,
-                color: const Color(0xFF9d4edd), // Purple
-                isHome: true,
-              ),
-              _buildNavItem(
-                index: 2,
-                title: 'الميداليات',
-                icon: Icons.emoji_events_outlined,
-                color: const Color(0xFFffb703), // Yellow/Orange
-              ),
-            ],
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -145,10 +162,19 @@ class _MainDashboardState extends State<MainDashboard> {
 }
 
 class MapScreen extends StatelessWidget {
-  const MapScreen({super.key});
+  final Map<String, dynamic>? userData;
+
+  const MapScreen({super.key, this.userData});
 
   @override
   Widget build(BuildContext context) {
+    final stars = (userData?['stars'] as int?) ?? 0;
+    final displayName = (userData?['displayName'] as String?) ?? FirebaseAuth.instance.currentUser?.displayName ?? 'ضيف';
+    final completedStages = (userData?['completedStages'] as Map<String, dynamic>?) ?? {};
+    final tasksCompleted = completedStages.length;
+    final taskTotal = 3;
+    final progressPercent = ((tasksCompleted / taskTotal) * 100).round();
+
     return Stack(
       children: [
         // Background Map Image
@@ -217,7 +243,7 @@ class MapScreen extends StatelessWidget {
                       const Icon(Icons.star_rounded, color: Color(0xFFffb703), size: 28),
                       const SizedBox(width: 8),
                       Text(
-                        '0',
+                        '$stars',
                         style: GoogleFonts.cairo(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -257,7 +283,7 @@ class MapScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          FirebaseAuth.instance.currentUser?.displayName ?? 'Noura khalid',
+                          displayName,
                           style: GoogleFonts.cairo(
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF9d4edd),

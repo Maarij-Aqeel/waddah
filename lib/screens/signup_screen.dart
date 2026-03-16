@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main_dashboard.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -35,7 +36,19 @@ class _SignupScreenState extends State<SignupScreen> {
       
       // Update the display name
       await userCredential.user?.updateDisplayName(_nameController.text.trim());
-      
+
+      // Create user profile document in Firestore
+      final uid = userCredential.user?.uid;
+      if (uid != null) {
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'displayName': _nameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'avatarIndex': 0,
+          'stars': 0,
+          'completedStages': {},
+        }, SetOptions(merge: true));
+      }
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
