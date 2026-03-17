@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main_dashboard.dart'; // To allow returning to map
 import 'lesson_videos_screen.dart';
 import 'quiz_screen.dart';
 
-class NodeProgressScreen extends StatelessWidget {
+class NodeProgressScreen extends StatefulWidget {
   final String nodeTitle;
   
   const NodeProgressScreen({
@@ -14,10 +15,49 @@ class NodeProgressScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final String userName = FirebaseAuth.instance.currentUser?.displayName ?? 'Noura khalid';
+  State<NodeProgressScreen> createState() => _NodeProgressScreenState();
+}
 
-    return Scaffold(
+class _NodeProgressScreenState extends State<NodeProgressScreen> {
+  String _stageKeyFromTitle(String title) {
+    switch (title) {
+      case 'آداب المترو':
+        return 'aedab';
+      case 'كيف أتنقل':
+        return 'travel';
+      case 'ماذا أفعل عند الضياع':
+        return 'lost';
+      default:
+        return 'aedab';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final String userName = currentUser?.displayName ?? 'Noura khalid';
+    final stageKey = _stageKeyFromTitle(widget.nodeTitle);
+
+    if (currentUser == null) {
+      return const Scaffold(body: Center(child: Text('يجب تسجيل الدخول')));
+    }
+
+    final userDocStream = FirebaseFirestore.instance.collection('users').doc(currentUser.uid).snapshots();
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: userDocStream,
+      builder: (context, snapshot) {
+        Map<String, dynamic>? userData;
+        if (snapshot.hasData && snapshot.data!.data() != null) {
+          userData = snapshot.data!.data();
+        }
+
+        final int stars = (userData?['stars'] as int?) ?? 0;
+        final completedStages = (userData?['completedStages'] as Map<String, dynamic>?) ?? {};
+        final stageData = completedStages[stageKey] as Map<String, dynamic>? ?? {};
+        final bool lessonCompleted = stageData['lessonCompleted'] == true;
+
+        return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -118,12 +158,12 @@ class NodeProgressScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
-                              children: [
-                                Text(
-                                  '0',
-                                  style: GoogleFonts.cairo(
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFFE65100),
+                                children: [
+                                  Text(
+                                    '$stars',
+                                    style: GoogleFonts.cairo(
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFFE65100),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -208,7 +248,7 @@ class NodeProgressScreen extends StatelessWidget {
                           const Icon(Icons.menu_book_rounded, color: Color(0xFF9000FF), size: 28),
                           const SizedBox(width: 12),
                           Text(
-                            nodeTitle,
+                            widget.nodeTitle,
                             style: GoogleFonts.cairo(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -235,7 +275,7 @@ class NodeProgressScreen extends StatelessWidget {
                               child: _buildTaskItem(
                                 number: '1',
                                 title: 'الدرس',
-                                subtitle: 'متاح ✓',
+                                subtitle: lessonCompleted ? 'مكتمل ✓' : 'متاح ✓',
                                 icon: Icons.chrome_reader_mode_outlined,
                                 iconBgColor: const Color(0xFFE8F5E9),
                                 iconColor: const Color(0xFF00C853),
@@ -248,39 +288,45 @@ class NodeProgressScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
 
-                            // 2. Quiz (Unlocked)
+                            // 2. Quiz (Locked if lesson not completed)
                             GestureDetector(
                               onTap: () {
-                                final stageKey = _stageKeyFromTitle(nodeTitle);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => QuizScreen(
-                                      stageKey: stageKey,
-                                      stageTitle: nodeTitle,
+                                if (!lessonCompleted) {
+                                  _showLockedDialog(context, isQuiz: true);
+                                } else {
+                                  final stageKey = _stageKeyFromTitle(widget.nodeTitle);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => QuizScreen(
+                                        stageKey: stageKey,
+                                        stageTitle: widget.nodeTitle,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               },
                               child: _buildTaskItem(
                                 number: '2',
                                 title: 'الاختبار',
-                                subtitle: 'ابدأ الآن',
-                                icon: Icons.help_outline_rounded,
-                                iconBgColor: const Color(0xFFE8F5E9),
-                                iconColor: const Color(0xFF00C853),
-                                pillColor: const Color(0xFF00C853),
-                                cardBgColor: Colors.white,
-                                borderColor: const Color(0xFF00C853).withValues(alpha: 0.25),
-                                isLocked: false,
-                                subtitleColor: const Color(0xFF00C853),
+                                subtitle: lessonCompleted ? 'ابدأ الآن' : 'مقفل 🔒',
+                                icon: lessonCompleted ? Icons.help_outline_rounded : Icons.lock_outline,
+                                iconBgColor: lessonCompleted ? const Color(0xFFE8F5E9) : const Color(0xFFF1F5F9),
+                                iconColor: lessonCompleted ? const Color(0xFF00C853) : const Color(0xFF94A3B8),
+                                pillColor: lessonCompleted ? const Color(0xFF00C853) : const Color(0xFF94A3B8),
+                                cardBgColor: lessonCompleted ? Colors.white : const Color(0xFFF8FAF9),
+                                borderColor: lessonCompleted 
+                                  ? const Color(0xFF00C853).withValues(alpha: 0.25)
+                                  : const Color(0xFFE2E8F0).withValues(alpha: 0.5),
+                                isLocked: !lessonCompleted,
+                                subtitleColor: lessonCompleted ? const Color(0xFF00C853) : const Color(0xFF94A3B8),
                               ),
                             ),
                             const SizedBox(height: 16),
 
                             // 3. AR Game (Locked)
                             GestureDetector(
-                              onTap: () => _showLockedDialog(context),
+                              onTap: () => _showLockedDialog(context, isQuiz: false),
                               child: _buildTaskItem(
                                 number: '3',
                                 title: 'لعبة الواقع\nالافتراضي',
@@ -308,82 +354,12 @@ class NodeProgressScreen extends StatelessWidget {
           ),
         ),
       ),
-      
-      // Custom Bottom Navigation Bar matching the image
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildBottomNavItem(
-                title: 'الخريطة',
-                icon: Icons.map_outlined,
-                color: const Color(0xFF00C853), // Green
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MainDashboard()),
-                    (route) => false,
-                  );
-                },
-              ),
-              // Purple Home Center Button
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MainDashboard()),
-                    (route) => false,
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF9d4edd),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.home_outlined, color: Colors.white, size: 28),
-                ),
-              ),
-              _buildBottomNavItem(
-                title: 'الميداليات',
-                icon: Icons.emoji_events_outlined,
-                color: const Color(0xFFffb703), // Yellow/Orange
-                onTap: () {
-                  // Usually route to medals/progress screen tab
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+    );
+  },
     );
   }
 
-  String _stageKeyFromTitle(String title) {
-    switch (title) {
-      case 'آداب المترو':
-        return 'aedab';
-      case 'كيف أتنقل':
-        return 'travel';
-      case 'ماذا أفعل عند الضياع':
-        return 'lost';
-      default:
-        return 'aedab';
-    }
-  }
+
 
   Widget _buildTaskItem({
     required String number,
@@ -528,7 +504,7 @@ class NodeProgressScreen extends StatelessWidget {
     );
   }
 
-  void _showLockedDialog(BuildContext context) {
+  void _showLockedDialog(BuildContext context, {required bool isQuiz}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -565,7 +541,7 @@ class NodeProgressScreen extends StatelessWidget {
 
                 // Title
                 Text(
-                  'الاختبار مغلق!',
+                  isQuiz ? 'الاختبار مغلق!' : 'قريباً',
                   style: GoogleFonts.cairo(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -576,7 +552,9 @@ class NodeProgressScreen extends StatelessWidget {
 
                 // Subtitle
                 Text(
-                  'يجب عليك إكمال الدرس للوصول إلى الاختبار',
+                  isQuiz 
+                    ? 'يجب عليك إكمال الدرس للوصول إلى الاختبار'
+                    : 'هذه الميزة ستكون متاحة قريباً',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.cairo(
                     fontSize: 16.0,

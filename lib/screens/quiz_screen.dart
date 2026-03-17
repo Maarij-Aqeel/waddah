@@ -36,13 +36,18 @@ class _QuizScreenState extends State<QuizScreen> {
       ],
       'questions': [
         {
-          'question': 'ماذا يجب أن تفعل إذا رأيت شخصاً كبيراً في السن واقفاً في المترو؟',
-          'options': ['تجاهله', 'الوقوف بعيداً عنه', 'إعطاؤه المقعد'],
-          'correct': 2,
+          'question': 'ما هو التصرف الصحيح عند ركوب المترو؟',
+          'options': ['الوقوف أمام الباب', 'الانتظار حتى ينزل الركاب أولاً', 'الدفع بقوة للدخول'],
+          'correct': 1,
         },
         {
-          'question': 'ما التصرف الصحيح عند دخول المترو؟',
-          'options': ['المزاحمة والدخول بسرعة', 'الانتظار في صف منظم', 'الركض داخل المحطة'],
+          'question': 'أين يجب أن تجلس في المترو؟',
+          'options': ['في أي مكان', 'أترك المقاعد المخصصة لكبار السن', 'على الأرض'],
+          'correct': 1,
+        },
+        {
+          'question': 'كيف تتحدث داخل المترو؟',
+          'options': ['بصوت عالٍ', 'بصوت هادئ', 'أصرخ مع أصدقائي'],
           'correct': 1,
         },
       ],
@@ -55,17 +60,18 @@ class _QuizScreenState extends State<QuizScreen> {
       ],
       'questions': [
         {
-          'question': 'ما أول خطوة لمعرفة طريقك في المترو؟',
-          'options': ['ركوب أي قطار', 'فتح خريطة المترو', 'النزول في أي محطة'],
+          'question': 'كيف تعرف اتجاه المترو الصحيح؟',
+          'options': ['من خلال اللوحات الإرشادية', 'أسأل أي شخص', 'أركب أي مترو'],
+          'correct': 0,
+        },
+        {
+          'question': 'ماذا تفعل إذا أردت تغيير المحطة؟',
+          'options': ['أخرج من المحطة وأعود', 'أستمع للإعلانات الصوتية وأنظر للوحة', 'أقف في مكاني'],
           'correct': 1,
         },
         {
-          'question': 'ماذا يجب أن تفعل أثناء الرحلة في المترو؟',
-          'options': [
-            'متابعة اسم المحطة الحالية والمحطة التالية',
-            'تجاهل أسماء المحطات',
-            'تغيير القطار في كل محطة',
-          ],
+          'question': 'كيف تتأكد أن هذا المترو هو الذي تريده؟',
+          'options': ['من لون الخط الموجود في الخريطة', 'أخمن الوجهة', 'أتبع أي شخص'],
           'correct': 0,
         },
       ],
@@ -78,14 +84,19 @@ class _QuizScreenState extends State<QuizScreen> {
       ],
       'questions': [
         {
-          'question': 'إذا انفصلت عن ولي أمرك في المترو ماذا يجب أن تفعل؟',
-          'options': ['تركض في المحطة وتبحث عنه', 'تبقى هادئًا وتطلب المساعدة من موظف', 'تصعد إلى قطار آخر'],
+          'question': 'ماذا تفعل إذا ضعت في المحطة؟',
+          'options': ['أبكي وأصرخ', 'أطلب المساعدة من موظف المحطة', 'أخرج من المحطة وحدي'],
           'correct': 1,
         },
         {
-          'question': 'أين يجب أن تنتظر إذا انفصلت عن ولي أمرك؟',
-          'options': ['خارج المحطة', 'في القطار التالي', 'في مكانك أو قرب موظف المترو'],
-          'correct': 2,
+          'question': 'كيف تتصرف إذا لم تجد عائلتك؟',
+          'options': ['أركب المترو وحدي', 'أذهب إلى الشرطة أو موظف الأمن', 'أذهب مع شخص غريب'],
+          'correct': 1,
+        },
+        {
+          'question': 'ما هو الرقم الذي يجب أن تحفظه في حالة الضياع؟',
+          'options': ['رقم صديقك', 'رقم والديك', 'رقم المدرسة'],
+          'correct': 1,
         },
       ],
     },
@@ -116,18 +127,22 @@ class _QuizScreenState extends State<QuizScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
-    await userDoc.set({
-      'stars': FieldValue.increment(earnedStars),
-      'completedStages': {
-        widget.stageKey: {
-          'correctAnswers': _correctCount,
-          'totalQuestions': _questions.length,
-          'earnedStars': earnedStars,
-          'completedAt': FieldValue.serverTimestamp(),
+    try {
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      await userDoc.set({
+        'stars': FieldValue.increment(earnedStars),
+        'completedStages': {
+          widget.stageKey: {
+            'correctAnswers': _correctCount,
+            'totalQuestions': _questions.length,
+            'earnedStars': earnedStars,
+            'completedAt': FieldValue.serverTimestamp(),
+          }
         }
-      }
-    }, SetOptions(merge: true));
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('Firebase Write Error in Quiz bypassed: $e');
+    }
   }
 
   Future<void> _nextQuestion() async {
@@ -341,16 +356,34 @@ class _QuizScreenState extends State<QuizScreen> {
                           const SizedBox(height: 14),
                           ...List.generate(3, (optionIndex) {
                             final isSelected = _selectedOption == optionIndex;
-                            final isCorrect = question['correct'] == optionIndex;
-                            final showCorrect = _isAnswerRevealed && isCorrect;
-                            final borderColor = isSelected
-                                ? const Color(0xFF22C55E)
-                                : const Color(0xFFE2E8F0);
-                            final backgroundColor = showCorrect
-                                ? const Color(0xFFDCFCE7)
-                                : isSelected
-                                    ? const Color(0xFFEDE9FE)
-                                    : Colors.white;
+                            final isTargetCorrect = question['correct'] == optionIndex;
+                            
+                            // Determine colors and icons based on reveal state
+                            Color borderColor = const Color(0xFFE2E8F0);
+                            Color backgroundColor = Colors.white;
+                            Color iconBgColor = const Color(0xFF94A3B8);
+                            Widget? feedbackIcon;
+
+                            if (_isAnswerRevealed) {
+                              if (isTargetCorrect) {
+                                // Correct option is always highlighted green when revealed
+                                borderColor = const Color(0xFF22C55E);
+                                backgroundColor = const Color(0xFFDCFCE7);
+                                iconBgColor = const Color(0xFF22C55E);
+                                feedbackIcon = const Icon(Icons.check_circle, color: Color(0xFF22C55E), size: 24);
+                              } else if (isSelected) {
+                                // Chosen wrong option is highlighted red
+                                borderColor = const Color(0xFFEF4444);
+                                backgroundColor = const Color(0xFFFEE2E2);
+                                iconBgColor = const Color(0xFFEF4444);
+                                feedbackIcon = const Icon(Icons.cancel, color: Color(0xFFEF4444), size: 24);
+                              }
+                            } else if (isSelected) {
+                              // Before reveal, selected option has standard highlight (though selection is immediate)
+                              borderColor = const Color(0xFF22C55E);
+                              backgroundColor = const Color(0xFFEDE9FE);
+                              iconBgColor = const Color(0xFF00C853);
+                            }
 
                             return GestureDetector(
                               onTap: _isAnswerRevealed ? null : () => _selectOption(optionIndex),
@@ -363,22 +396,27 @@ class _QuizScreenState extends State<QuizScreen> {
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Text(
-                                      question['options'][optionIndex],
-                                      textAlign: TextAlign.right,
-                                      style: GoogleFonts.cairo(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF1F2937),
+                                    if (feedbackIcon != null) ...[
+                                      feedbackIcon,
+                                      const SizedBox(width: 12),
+                                    ],
+                                    Expanded(
+                                      child: Text(
+                                        question['options'][optionIndex],
+                                        textAlign: TextAlign.right,
+                                        style: GoogleFonts.cairo(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xFF1F2937),
+                                        ),
                                       ),
                                     ),
+                                    const SizedBox(width: 12),
                                     CircleAvatar(
                                       radius: 14,
-                                      backgroundColor: isSelected
-                                          ? const Color(0xFF00C853)
-                                          : const Color(0xFF94A3B8),
+                                      backgroundColor: iconBgColor,
                                       child: Text(
                                         String.fromCharCode(65 + optionIndex),
                                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -389,33 +427,6 @@ class _QuizScreenState extends State<QuizScreen> {
                               ),
                             );
                           }),
-                          if (_isAnswerRevealed)
-                            Container(
-                              margin: const EdgeInsets.only(top: 8),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD1FAE5),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.check_circle, color: Color(0xFF059669)),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      _selectedOption == question['correct']
-                                          ? 'ممتاز! إجابة صحيحة 🎉'
-                                          : 'حسنًا. الإجابة الصحيحة: ${question['options'][question['correct']]}.',
-                                      style: GoogleFonts.cairo(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF065F46),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                         ],
                       ),
                     ),

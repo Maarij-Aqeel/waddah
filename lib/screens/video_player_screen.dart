@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:video_player/video_player.dart';
 import 'quiz_screen.dart';
 
-class VideoPlayerScreen extends StatelessWidget {
+class VideoPlayerScreen extends StatefulWidget {
   final String videoTitle;
   final int starsReward;
 
@@ -13,7 +16,128 @@ class VideoPlayerScreen extends StatelessWidget {
   });
 
   @override
+  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
+}
+
+class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  bool _isCompleting = false;
+  late VideoPlayerController _videoController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Assuming the temporary video is named video.mp4 in assets
+    _videoController = VideoPlayerController.asset('assets/video.mp4')
+      ..initialize().then((_) {
+        if (mounted) {
+          setState(() {}); // Ensure the first frame is shown and play button appears
+        }
+      }).catchError((error) {
+        debugPrint("Video load error: \$error");
+      });
+  }
+
+  @override
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
+  }
+
+  String get _stageKey {
+    switch (widget.videoTitle) {
+      case 'آداب المترو':
+      case 'الدرس الأول: آداب المترو':
+        return 'aedab';
+      case 'كيف أتنقل':
+      case 'الدرس الثاني: كيف أتنقل':
+        return 'travel';
+      case 'ماذا أفعل عند الضياع':
+      case 'الدرس الثالث: ماذا أفعل عند الضياع':
+        return 'lost';
+      default:
+        return 'aedab';
+    }
+  }
+
+  List<String> get _guidelines {
+    switch (_stageKey) {
+      case 'travel':
+        return [
+          'التعرف على خطوط المترو عبر خريطة تطبيق وضاح.',
+          'معرفة المحطة الحالية والوجهة قبل بدء الرحلة.',
+          'متابعة المحطات ومعرفة أماكن الانتقال بين الخطوط',
+        ];
+      case 'lost':
+        return [
+          'حافظ على هدوئك إذا انفصلت عن ولي أمرك في المترو.',
+          'ابق في مكان آمن واطلب المساعدة من موظف المترو.',
+          'أخبر الموظف برقم ولي أمرك.',
+        ];
+      case 'aedab':
+      default:
+        return [
+          'الالتزام بالانتظار المنظم وعدم المزاحمة',
+          'إظهار الاحترام لكبار السن داخل المترو',
+          'المحافظة على الهدوء والنظافة أثناء الرحلة',
+        ];
+    }
+  }
+
+  Future<void> _completeLessonAndGoToQuiz() async {
+    if (_isCompleting) return;
+    
+    setState(() {
+      _isCompleting = true;
+    });
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+        await userDoc.set({
+          'completedStages': {
+            _stageKey: {
+              'lessonCompleted': true,
+              'lessonCompletedAt': FieldValue.serverTimestamp(),
+            }
+          }
+        }, SetOptions(merge: true));
+      }
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizScreen(
+              stageKey: _stageKey,
+              stageTitle: widget.videoTitle,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isCompleting = false;
+        });
+        debugPrint('Firebase Write Error Bypassed: $e');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizScreen(
+              stageKey: _stageKey,
+              stageTitle: widget.videoTitle,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final rules = _guidelines;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -63,7 +187,7 @@ class VideoPlayerScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
-                  videoTitle,
+                  widget.videoTitle,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.cairo(
                     fontSize: 22,
@@ -74,7 +198,7 @@ class VideoPlayerScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Video Player Mock Area
+              // Video Player Area
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Container(
@@ -90,89 +214,47 @@ class VideoPlayerScreen extends StatelessWidget {
                         offset: const Offset(0, 8),
                       ),
                     ],
-                    // We can use a placeholder image if needed
-                    image: const DecorationImage(
-                      image: AssetImage('assets/saudi_map_bg.jpg'), // Placeholder background
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(Colors.black45, BlendMode.darken),
-                    ),
                   ),
-                  child: Stack(
-                    children: [
-                      // Center Play Button
-                      Center(
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.play_arrow_rounded,
-                            color: Color(0xFF00C853),
-                            size: 50,
-                          ),
-                        ),
-                      ),
-                      // Mock Controls Bottom Bar
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Volume Icon
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.8),
-                                shape: BoxShape.circle,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: _videoController.value.isInitialized
+                        ? Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: _videoController.value.aspectRatio,
+                                child: VideoPlayer(_videoController),
                               ),
-                              child: const Icon(Icons.volume_up, color: Color(0xFF00C853), size: 20),
-                            ),
-
-                            // Progress Bar Mock
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      height: 6,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '0:00 / 1:30',
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
+                              // Play/Pause button
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _videoController.value.isPlaying
+                                        ? _videoController.pause()
+                                        : _videoController.play();
+                                  });
+                                },
+                                child: Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    _videoController.value.isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
                                 ),
                               ),
-                            ),
-
-                            // Rewind Icon
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.8),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.skip_previous, color: Color(0xFF00C853), size: 20),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                            ],
+                          )
+                        : const Center(
+                            child: CircularProgressIndicator(color: Color(0xFF00C853)),
+                          ),
                   ),
                 ),
               ),
@@ -222,11 +304,12 @@ class VideoPlayerScreen extends StatelessWidget {
 
 
                           physics: const BouncingScrollPhysics(),
-                          children: [
-                            _buildStepPill(number: '1', text: 'الالتزام بالانتظار المنظم وعدم المزاحمة'),
-                            _buildStepPill(number: '2', text: 'إظهار الاحترام لكبار السن داخل المترو'),
-                            _buildStepPill(number: '3', text: 'المحافظة على الهدوء والنظافة أثناء الرحلة'),
-                          ],
+                          children: List.generate(rules.length, (index) {
+                            return _buildStepPill(
+                              number: '${index + 1}', 
+                              text: rules[index],
+                            );
+                          }),
                         ),
                       ),
                     ],
@@ -270,7 +353,7 @@ class VideoPlayerScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '+$starsReward نجمة',
+                            '+${widget.starsReward} نجمة',
                             style: GoogleFonts.cairo(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -291,33 +374,24 @@ class VideoPlayerScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: InkWell(
-                  onTap: () {
-                    // Quiz page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizScreen(
-                          stageKey: 'aedab',
-                          stageTitle: videoTitle,
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: _isCompleting ? null : _completeLessonAndGoToQuiz,
                   borderRadius: BorderRadius.circular(24),
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFF00C853), // Green
-                          Color(0xFF9000FF), // Purple
-                        ],
+                      gradient: LinearGradient(
+                        colors: _isCompleting 
+                          ? [Colors.grey, Colors.grey.shade400]
+                          : [
+                              const Color(0xFF00C853), // Green
+                              const Color(0xFF9000FF), // Purple
+                            ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
                       borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
+                      boxShadow: _isCompleting ? [] : [
                         BoxShadow(
                           color: const Color(0xFF9000FF).withValues(alpha: 0.3),
                           blurRadius: 12,
@@ -325,15 +399,23 @@ class VideoPlayerScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: Text(
-                      'إكمال الدرس',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.cairo(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: _isCompleting 
+                      ? const Center(
+                          child: SizedBox(
+                            width: 24, 
+                            height: 24, 
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)
+                          )
+                        )
+                      : Text(
+                          'إكمال الدرس',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.cairo(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                   ),
                 ),
               ),

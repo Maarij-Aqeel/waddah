@@ -136,7 +136,7 @@ class FeedbackScreen extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 side: const BorderSide(color: Color(0xFFCBD5E1)),

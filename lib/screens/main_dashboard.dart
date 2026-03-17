@@ -320,39 +320,49 @@ class MapScreen extends StatelessWidget {
           ),
         ),
 
-        // Node 2: Blue (Locked)
+        // Node 2: Blue (Locked until Stage 1 complete)
         Positioned(
           left: MediaQuery.of(context).size.width * 0.1,
           top: MediaQuery.of(context).size.height * 0.55,
           child: GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const NodeProgressScreen(nodeTitle: 'كيف أتنقل')),
-            ),
+            onTap: () {
+              if (completedStages.containsKey('aedab')) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NodeProgressScreen(nodeTitle: 'كيف أتنقل')),
+                );
+              }
+            },
             child: _buildMapNode(
-              icon: Icons.lock_outline,
+              icon: completedStages.containsKey('aedab') ? Icons.play_arrow_rounded : Icons.lock_outline,
+              number: '2',
               label: 'كيف أتنقل',
               color: const Color(0xFF1565C0), // Blue
-              isLocked: true,
+              isLocked: !completedStages.containsKey('aedab'),
               isSecondaryColorText: true, // Blue has white text inside blue pill
             ),
           ),
         ),
 
-        // Node 3: Green (Locked)
+        // Node 3: Green (Locked until Stage 2 complete)
         Positioned(
           right: MediaQuery.of(context).size.width * 0.35,
           bottom: MediaQuery.of(context).size.height * 0.2, // Adjusting bottom padding explicitly
           child: GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const NodeProgressScreen(nodeTitle: 'ماذا أفعل عند الضياع')),
-            ),
+            onTap: () {
+              if (completedStages.containsKey('travel')) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NodeProgressScreen(nodeTitle: 'ماذا أفعل عند الضياع')),
+                );
+              }
+            },
             child: _buildMapNode(
-              icon: Icons.lock_outline,
+              icon: completedStages.containsKey('travel') ? Icons.play_arrow_rounded : Icons.lock_outline,
+              number: '3',
               label: 'ماذا أفعل\nعند الضياع',
               color: const Color(0xFF2E7D32), // Dark Green
-              isLocked: true,
+              isLocked: !completedStages.containsKey('travel'),
               isSecondaryColorText: true, // Green has white text inside green pill
               multilineLabel: true,
             ),
