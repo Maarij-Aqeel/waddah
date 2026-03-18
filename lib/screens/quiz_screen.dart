@@ -201,13 +201,18 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -252,76 +257,68 @@ class _QuizScreenState extends State<QuizScreen> {
                           color: const Color(0xFF7C33FF),
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'اختبر معلوماتك في ${widget.stageTitle}',
-                        style: GoogleFonts.cairo(
-                          fontSize: 16,
-                          color: const Color(0xFF3F3D56),
-                        ),
-                      ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 13),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        )
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            'نقاط أساسية',
-                            textAlign: TextAlign.right,
-                            style: GoogleFonts.cairo(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: const Color(0xFF1F2937),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          ..._stagePoints.map(
-                            (point) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.check_circle, color: Color(0xFF00C853), size: 18),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      point,
-                                      textAlign: TextAlign.right,
-                                      style: GoogleFonts.cairo(
-                                        fontSize: 14,
-                                        color: const Color(0xFF334155),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                // const SizedBox(height: 16),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                //   child: Container(
+                //     width: double.infinity,
+                //     decoration: BoxDecoration(
+                //       color: Colors.white,
+                //       borderRadius: BorderRadius.circular(24),
+                //       boxShadow: [
+                //         BoxShadow(
+                //           color: Colors.black.withValues(alpha: 13),
+                //           blurRadius: 10,
+                //           offset: const Offset(0, 4),
+                //         )
+                //       ],
+                //     ),
+                //     child: Padding(
+                //       padding: const EdgeInsets.all(16.0),
+                //       child: Column(
+                //         crossAxisAlignment: CrossAxisAlignment.end,
+                //         children: [
+                //           Text(
+                //             'نقاط أساسية',
+                //             textAlign: TextAlign.right,
+                //             style: GoogleFonts.cairo(
+                //               fontWeight: FontWeight.bold,
+                //               fontSize: 18,
+                //               color: const Color(0xFF1F2937),
+                //             ),
+                //           ),
+                //           const SizedBox(height: 8),
+                //           ..._stagePoints.map(
+                //             (point) => Padding(
+                //               padding: const EdgeInsets.symmetric(vertical: 4.0),
+                //               child: Row(
+                //                 children: [
+                //                   const Icon(Icons.check_circle, color: Color(0xFF00C853), size: 18),
+                //                   const SizedBox(width: 8),
+                //                   Expanded(
+                //                     child: Text(
+                //                       point,
+                //                       textAlign: TextAlign.right,
+                //                       style: GoogleFonts.cairo(
+                //                         fontSize: 14,
+                //                         color: const Color(0xFF334155),
+                //                         fontWeight: FontWeight.w600,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
 
                 const SizedBox(height: 16),
                 Padding(
@@ -433,7 +430,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const Spacer(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
                   child: ElevatedButton(
@@ -454,6 +451,10 @@ class _QuizScreenState extends State<QuizScreen> {
             ),
           ),
         ),
+      );
+    },
+  ),
+),
       ),
     );
   }

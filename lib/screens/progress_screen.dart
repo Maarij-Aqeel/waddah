@@ -1,13 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'main_dashboard.dart';
 
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FE), // Light background
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final String userName = currentUser?.displayName ?? 'ضيف';
+
+    if (currentUser == null) {
+      return const Scaffold(body: Center(child: Text('يجب تسجيل الدخول')));
+    }
+
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').doc(currentUser.uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFF8F9FE),
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final data = snapshot.data?.data() as Map<String, dynamic>?;
+        final int stars = (data?['stars'] as int?) ?? 0;
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF8F9FE), // Light background
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 40),
         child: Column(
@@ -49,7 +72,13 @@ class ProgressScreen extends StatelessWidget {
                                   ),
                                   child: IconButton(
                                     icon: const Icon(Icons.arrow_forward, color: Color(0xFF00C853)),
-                                    onPressed: () => Navigator.pop(context),
+                                    onPressed: () {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const MainDashboard()),
+                                        (route) => false,
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
@@ -80,7 +109,7 @@ class ProgressScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'رائع يا Noura khalid!',
+                            'رائع يا $userName!',
                             style: GoogleFonts.cairo(
                               color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 14,
@@ -119,7 +148,7 @@ class ProgressScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '0',
+                              '$stars',
                               style: GoogleFonts.cairo(
                                 color: const Color(0xFF00C853),
                                 fontSize: 48,
@@ -133,35 +162,12 @@ class ProgressScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'الوصول للتالي: 200 نجمة',
+                          'الوصول للتالي: ${stars < 50 ? 50 : stars < 100 ? 100 : stars < 200 ? 200 : "200+"} نجمة',
                           style: GoogleFonts.cairo(
                             color: Colors.grey[600],
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              '0%',
-                              style: GoogleFonts.cairo(
-                                color: const Color(0xFF00C853),
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),
@@ -198,7 +204,7 @@ class ProgressScreen extends StatelessWidget {
                 children: [
                   _buildMedalCard(
                     title: 'ميدالية برونزية',
-                    isLocked: false,
+                    isLocked: stars < 50,
                     pointsLabel: '50+',
                     subText1: 'حصلت على 50+', // Following textual display exactly
                     subText2: 'البداية - 99 نجمة',
@@ -206,16 +212,16 @@ class ProgressScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildMedalCard(
                     title: 'ميدالية فضية',
-                    isLocked: true,
-                    pointsLabel: '',
+                    isLocked: stars < 100,
+                    pointsLabel: '100+',
                     subText1: 'حصلت على 100+',
                     subText2: '100 - 199 نجمة',
                   ),
                   const SizedBox(height: 16),
                   _buildMedalCard(
                     title: 'ميدالية ذهبية',
-                    isLocked: true,
-                    pointsLabel: '',
+                    isLocked: stars < 200,
+                    pointsLabel: '200+',
                     subText1: 'حصلت على 200+',
                     subText2: '200+ نجمة',
                   ),
@@ -225,6 +231,8 @@ class ProgressScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+      },
     );
   }
 

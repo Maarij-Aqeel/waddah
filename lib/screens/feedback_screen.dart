@@ -50,16 +50,7 @@ class FeedbackScreen extends StatelessWidget {
                 color: const Color(0xFF8B5CF6),
               ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              'لقد أتممت اختبار $stageTitle',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.cairo(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF4B5563),
-              ),
-            ),
+            
             const SizedBox(height: 20),
             Expanded(
               child: Padding(

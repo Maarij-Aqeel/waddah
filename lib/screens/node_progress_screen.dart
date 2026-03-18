@@ -269,7 +269,7 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const LessonVideosScreen()),
+                                  MaterialPageRoute(builder: (context) => LessonVideosScreen(nodeTitle: widget.nodeTitle)),
                                 );
                               },
                               child: _buildTaskItem(

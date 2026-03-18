@@ -5,7 +5,9 @@ import 'main_dashboard.dart';
 import 'video_player_screen.dart';
 
 class LessonVideosScreen extends StatelessWidget {
-  const LessonVideosScreen({super.key});
+  final String nodeTitle;
+
+  const LessonVideosScreen({super.key, required this.nodeTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -153,16 +155,16 @@ class LessonVideosScreen extends StatelessWidget {
                     // Video 1
                     _buildVideoCard(
                       context: context,
-                      title: 'آداب المترو',
+                      title: nodeTitle,
                       duration: '1:30',
                       stars: '35',
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const VideoPlayerScreen(
-                              videoTitle: 'كيف أنتظر القطار بأدب',
-                              starsReward: 15,
+                            builder: (context) => VideoPlayerScreen(
+                              videoTitle: nodeTitle,
+                              starsReward: 35,
                             ),
                           ),
                         );
