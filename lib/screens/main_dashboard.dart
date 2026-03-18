@@ -303,8 +303,8 @@ class MapScreen extends StatelessWidget {
         
         // Node 1: Purple (Unlocked/Current)
         Positioned(
-          right: MediaQuery.of(context).size.width * 0.15,
-          top: MediaQuery.of(context).size.height * 0.45,
+          right: MediaQuery.of(context).size.width * 0.1,
+          top: MediaQuery.of(context).size.height * 0.42,
           child: GestureDetector(
             onTap: () => Navigator.push(
               context,
@@ -323,7 +323,7 @@ class MapScreen extends StatelessWidget {
         // Node 2: Blue (Locked until Stage 1 complete)
         Positioned(
           left: MediaQuery.of(context).size.width * 0.1,
-          top: MediaQuery.of(context).size.height * 0.55,
+          top: MediaQuery.of(context).size.height * 0.4,
           child: GestureDetector(
             onTap: () {
               if (completedStages.containsKey('aedab')) {
@@ -346,8 +346,8 @@ class MapScreen extends StatelessWidget {
 
         // Node 3: Green (Locked until Stage 2 complete)
         Positioned(
-          right: MediaQuery.of(context).size.width * 0.35,
-          bottom: MediaQuery.of(context).size.height * 0.2, // Adjusting bottom padding explicitly
+          right: MediaQuery.of(context).size.width * 0.5,
+          bottom: MediaQuery.of(context).size.height * 0.15, // Adjusting bottom padding explicitly
           child: GestureDetector(
             onTap: () {
               if (completedStages.containsKey('travel')) {
