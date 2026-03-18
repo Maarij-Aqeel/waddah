@@ -1,0 +1,47 @@
+name: Flutter iOS & Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # macOS is strictly required to build iOS apps. 
+    # If you only want to build Android, you can change this back to ubuntu-latest.
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Replaces setup-dart. This action sets up the Flutter SDK 
+      # and includes built-in caching (cache: true), so you don't 
+      # need a separate actions/cache step anymore.
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        # dart format is still the standard for Flutter projects
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze project source
+        run: flutter analyze --fatal-infos
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Build iOS (Unsigned)
+        # Building a fully signed IPA requires uploading your Apple Developer certificates.
+        # This step builds the iOS app without signing to verify that it compiles successfully.
+        run: flutter build ios --release --no-codesign
