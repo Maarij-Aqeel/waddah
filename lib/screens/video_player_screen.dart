@@ -158,7 +158,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
                       width: 48,

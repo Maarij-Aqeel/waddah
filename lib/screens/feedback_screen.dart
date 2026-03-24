@@ -108,6 +108,21 @@ class FeedbackScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: OutlinedButton(
+                              onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                side: const BorderSide(color: Color(0xFFCBD5E1)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              ),
+                              child: Text(
+                                'رجوع',
+                                style: GoogleFonts.cairo(fontSize: 16, color: const Color(0xFF1F2937)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: OutlinedButton(
                               onPressed: () => Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(builder: (context) => const MainDashboard()),
@@ -120,21 +135,6 @@ class FeedbackScreen extends StatelessWidget {
                               ),
                               child: Text(
                                 'العودة للرئيسية',
-                                style: GoogleFonts.cairo(fontSize: 16, color: const Color(0xFF1F2937)),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                side: const BorderSide(color: Color(0xFFCBD5E1)),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              ),
-                              child: Text(
-                                'رجوع',
                                 style: GoogleFonts.cairo(fontSize: 16, color: const Color(0xFF1F2937)),
                               ),
                             ),

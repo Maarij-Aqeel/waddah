@@ -199,7 +199,7 @@ final Map<String, Map<String, dynamic>> _stageData = {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
                         width: 45,

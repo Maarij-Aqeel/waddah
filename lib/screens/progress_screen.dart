@@ -63,7 +63,7 @@ class ProgressScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Container(
                                   decoration: const BoxDecoration(
@@ -208,6 +208,9 @@ class ProgressScreen extends StatelessWidget {
                     pointsLabel: '50+',
                     subText1: 'حصلت على 50+', // Following textual display exactly
                     subText2: 'البداية - 99 نجمة',
+                    activeBgColor: const Color(0xFFFFE0B2),
+                    activeBorderColor: const Color(0xFFE65100),
+                    activeIconBgColor: const Color(0xFFD87D4A),
                   ),
                   const SizedBox(height: 16),
                   _buildMedalCard(
@@ -216,6 +219,9 @@ class ProgressScreen extends StatelessWidget {
                     pointsLabel: '100+',
                     subText1: 'حصلت على 100+',
                     subText2: '100 - 199 نجمة',
+                    activeBgColor: const Color(0xFFF1F5F9), // Light silver
+                    activeBorderColor: const Color(0xFF94A3B8), // Silver border
+                    activeIconBgColor: const Color(0xFF64748B), // Slaty silver icon
                   ),
                   const SizedBox(height: 16),
                   _buildMedalCard(
@@ -224,6 +230,9 @@ class ProgressScreen extends StatelessWidget {
                     pointsLabel: '200+',
                     subText1: 'حصلت على 200+',
                     subText2: '200+ نجمة',
+                    activeBgColor: const Color(0xFFFEF08A), // Light gold
+                    activeBorderColor: const Color(0xFFEAB308), // Gold border
+                    activeIconBgColor: const Color(0xFFF59E0B), // Deep gold icon
                   ),
                 ],
               ),
@@ -242,9 +251,12 @@ class ProgressScreen extends StatelessWidget {
     required String pointsLabel,
     required String subText1,
     required String subText2,
+    required Color activeBgColor,
+    required Color activeBorderColor,
+    required Color activeIconBgColor,
   }) {
-    final bgColor = isLocked ? const Color(0xFFF0F4F8) : const Color(0xFFFFE0B2); // light grey-blue for locked, peach for bronze
-    final borderColor = isLocked ? Colors.grey[300]! : const Color(0xFFE65100);
+    final bgColor = isLocked ? const Color(0xFFF0F4F8) : activeBgColor;
+    final borderColor = isLocked ? Colors.grey[300]! : activeBorderColor;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -366,7 +378,7 @@ class ProgressScreen extends StatelessWidget {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD87D4A), // Rich Bronze
+                    color: activeIconBgColor,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(

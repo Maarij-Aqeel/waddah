@@ -82,8 +82,26 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Empty space for flex alignment
-                    const SizedBox(width: 48),
+                    // Back Button (Conceptual right -> points left but in RTL context it's right pointing arrow)
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_forward, color: Color(0xFF00C853)),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
 
                     // Center Avatar Box
                     Container(
@@ -113,26 +131,8 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                       ),
                     ),
 
-                    // Back Button (Conceptual right -> points left but in RTL context it's right pointing arrow)
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_forward, color: Color(0xFF00C853)),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
+                    // Empty space for flex alignment
+                    const SizedBox(width: 48),
                   ],
                 ),
               ),

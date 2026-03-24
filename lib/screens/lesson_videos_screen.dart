@@ -38,23 +38,24 @@ class LessonVideosScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Home Button
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (context) => const MainDashboard()),
-                              (route) => false,
-                            );
-                          },
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF9000FF),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.home_outlined, color: Colors.white),
+                        // Back Button
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_forward, color: Color(0xFF00C853)),
+                            onPressed: () => Navigator.pop(context),
                           ),
                         ),
 
@@ -85,24 +86,23 @@ class LessonVideosScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // Back Button
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_forward, color: Color(0xFF00C853)),
-                            onPressed: () => Navigator.pop(context),
+                        // Home Button
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MainDashboard()),
+                              (route) => false,
+                            );
+                          },
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF9000FF),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.home_outlined, color: Colors.white),
                           ),
                         ),
                       ],
