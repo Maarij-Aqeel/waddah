@@ -94,7 +94,7 @@ class FeedbackScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'نجوم +$earnedStars',
+                        'نجوم +$earnedStars⭐',
                         style: GoogleFonts.cairo(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

@@ -299,7 +299,7 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                               context,
                               'الخط البنفسجي',
                               const Color(0xFFA855F7),
-                              'يمتد بين طريق عبدالرحمن بن عوف و النسيم',
+                              'يتمد بين النسيم و مركز الملك عبدالله المالي',
                               [
                                 'غرناطة',
                                 'النسيم',
@@ -313,7 +313,7 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                               context,
                               'الخط الأصفر',
                               const Color(0xFFF59E0B),
-                              'يمتد بين مركز الملك عبدالله المالي (كافد) و مطار الملك خالد الدولي',
+                              'يمتد بين مطار الملك خالد الدولي و مركز الملك عبدالله المالي',
                               [
                                 'مركز الملك عبدالله المالي (كافد)',
                                 'جامعة الاميرة نورة',
@@ -328,7 +328,7 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                               context,
                               'الخط الأزرق',
                               const Color(0xFF3B82F6),
-                              'يمتد بين مركز الملك عبدالله المالي (كافد) و الحاير',
+                              'يمتد بين العارض و الدار البيضاء',
                               [
                                 'مركز الملك عبدالله المالي (كافد)',
                                 'اس تي سي',
@@ -351,7 +351,7 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                               context,
                               'الخط الأحمر',
                               const Color(0xFFEF4444),
-                              'يمتد بين جامعة الملك سعود و استاد الملك فهد',
+                              'يمتد بين استاد الملك فهد و جامعة الملك سعود',
                               [
                                 'جامعة الملك سعود',
                                 'وزارة التعليم',
@@ -367,7 +367,7 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                               context,
                               'الخط البرتقالي',
                               const Color(0xFFF97316),
-                              'يمتد بين ظهرة البديعة و النسيم',
+                              'يمتد بين خشم العان و طريق جدة',
                               [
                                 'ظهرة البديعة',
                                 'قصر الحكم',
@@ -382,7 +382,7 @@ class _MapViewerScreenState extends State<MapViewerScreen> {
                               context,
                               'الخط الأخضر',
                               const Color(0xFF10B981),
-                              'يمتد بين وزارة الدفاع و الملز',
+                              'يمتد بين وزارة التعليم و المتحف الوطني',
                               [
                                 'وزارة الدفاع',
                                 'المتحف الوطني',
