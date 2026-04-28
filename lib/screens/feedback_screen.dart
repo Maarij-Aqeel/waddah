@@ -22,8 +22,18 @@ class FeedbackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFF),
-      body: SafeArea(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE9D4FF),
+              Color(0xFFB9F8CF),
+            ],
+          ),
+        ),
+        child: SafeArea(
         child: Column(
           children: [
             const SizedBox(height: 24),
@@ -176,6 +186,7 @@ class FeedbackScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

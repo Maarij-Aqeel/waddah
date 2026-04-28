@@ -340,30 +340,38 @@ final Map<String, Map<String, dynamic>> _stageData = {
                             final isSelected = _selectedOption == optionIndex;
                             final isTargetCorrect = question['correct'] == optionIndex;
                             
-                            // Determine colors and icons based on reveal state
                             Color borderColor = const Color(0xFFE2E8F0);
-                            Color backgroundColor = Colors.white;
+                            Gradient? backgroundGradient;
                             Color iconBgColor = const Color(0xFF94A3B8);
                             Widget? feedbackIcon;
 
                             if (_isAnswerRevealed) {
                               if (isTargetCorrect) {
-                                // Correct option is always highlighted green when revealed
                                 borderColor = const Color(0xFF22C55E);
-                                backgroundColor = const Color(0xFFDCFCE7);
+                                backgroundGradient = const LinearGradient(
+                                  colors: [Color(0xFFDCFCE7), Color(0xFFBBF7D0)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                );
                                 iconBgColor = const Color(0xFF22C55E);
                                 feedbackIcon = const Icon(Icons.check_circle, color: Color(0xFF22C55E), size: 24);
                               } else if (isSelected) {
-                                // Chosen wrong option is highlighted red
                                 borderColor = const Color(0xFFEF4444);
-                                backgroundColor = const Color(0xFFFEE2E2);
+                                backgroundGradient = const LinearGradient(
+                                  colors: [Color(0xFFFEE2E2), Color(0xFFFECACA)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                );
                                 iconBgColor = const Color(0xFFEF4444);
                                 feedbackIcon = const Icon(Icons.cancel, color: Color(0xFFEF4444), size: 24);
                               }
                             } else if (isSelected) {
-                              // Before reveal, selected option has standard highlight (though selection is immediate)
                               borderColor = const Color(0xFF22C55E);
-                              backgroundColor = const Color(0xFFEDE9FE);
+                              backgroundGradient = const LinearGradient(
+                                colors: [Color(0xFFEDE9FE), Color(0xFFDDD6FE)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              );
                               iconBgColor = const Color(0xFF00C853);
                             }
 
@@ -373,7 +381,8 @@ final Map<String, Map<String, dynamic>> _stageData = {
                                 margin: const EdgeInsets.only(bottom: 10),
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                                 decoration: BoxDecoration(
-                                  color: backgroundColor,
+                                  color: backgroundGradient == null ? Colors.white : null,
+                                  gradient: backgroundGradient,
                                   border: Border.all(color: borderColor, width: 1.5),
                                   borderRadius: BorderRadius.circular(14),
                                 ),

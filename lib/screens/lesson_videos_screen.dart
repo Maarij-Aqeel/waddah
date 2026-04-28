@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main_dashboard.dart';
 import 'video_player_screen.dart';
+
+const List<String> _avatarEmojis = [
+  '👦', '👧', '🦸‍♂️', '🦸‍♀️', '🤴', '👸', '😎', '🤓',
+  '🌸', '⭐', '🚀', '🎨', '🦁', '🐼', '🦄', '🎮',
+];
 
 class LessonVideosScreen extends StatelessWidget {
   final String nodeTitle;
@@ -60,30 +66,37 @@ class LessonVideosScreen extends StatelessWidget {
                         ),
 
                         // Avatar Circle
-                        Container(
-                          width: 80,
-                          height: 80,
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(FirebaseAuth.instance.currentUser?.uid)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            final userData = snapshot.data?.data() ?? {};
+                            final avatarIndex = ((userData['avatarIndex'] as int?) ?? 0)
+                                .clamp(0, _avatarEmojis.length - 1);
+                            return Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(40),
-                            child: Image.asset(
-                              'assets/logo.png', // Fallback
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.train, size: 40, color: Color(0xFF9000FF)),
-                            ),
-                          ),
+                              child: Center(
+                                child: Text(
+                                  _avatarEmojis[avatarIndex],
+                                  style: const TextStyle(fontSize: 40),
+                                ),
+                              ),
+                            );
+                          },
                         ),
 
                         // Home Button

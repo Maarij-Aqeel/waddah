@@ -19,6 +19,11 @@ class NodeProgressScreen extends StatefulWidget {
 }
 
 class _NodeProgressScreenState extends State<NodeProgressScreen> {
+  static const List<String> _avatarEmojis = [
+    '👦', '👧', '🦸‍♂️', '🦸‍♀️', '🤴', '👸', '😎', '🤓',
+    '🌸', '⭐', '🚀', '🎨', '🦁', '🐼', '🦄', '🎮',
+  ];
+
   String _stageKeyFromTitle(String title) {
     switch (title) {
       case 'آداب المترو':
@@ -53,6 +58,7 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
         }
 
         final int stars = (userData?['stars'] as int?) ?? 0;
+        final int avatarIndex = ((userData?['avatarIndex'] as int?) ?? 0).clamp(0, _avatarEmojis.length - 1);
         final completedStages = (userData?['completedStages'] as Map<String, dynamic>?) ?? {};
         final stageData = completedStages[stageKey] as Map<String, dynamic>? ?? {};
         final bool lessonCompleted = stageData['lessonCompleted'] == true;
@@ -121,13 +127,10 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                           ),
                         ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40),
-                        child: Image.asset(
-                          'assets/logo.png', // Fallback to provided logo
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.train, size: 50, color: Color(0xFF9000FF)),
+                      child: Center(
+                        child: Text(
+                          _avatarEmojis[avatarIndex],
+                          style: const TextStyle(fontSize: 48),
                         ),
                       ),
                     ),
@@ -202,8 +205,8 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                                   color: Color(0xFFF3E8FF),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Center(
-                                  child: Text('👦', style: TextStyle(fontSize: 18)),
+                                child: Center(
+                                  child: Text(_avatarEmojis[avatarIndex], style: const TextStyle(fontSize: 18)),
                                 ),
                               ),
                             ],
