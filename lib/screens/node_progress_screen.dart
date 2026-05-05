@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main_dashboard.dart'; // To allow returning to map
 import 'lesson_videos_screen.dart';
 import 'quiz_screen.dart';
+import 'game_screen.dart';
 
 class NodeProgressScreen extends StatefulWidget {
   final String nodeTitle;
@@ -62,6 +63,7 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
         final completedStages = (userData?['completedStages'] as Map<String, dynamic>?) ?? {};
         final stageData = completedStages[stageKey] as Map<String, dynamic>? ?? {};
         final bool lessonCompleted = stageData['lessonCompleted'] == true;
+        final bool quizCompleted = stageData['completedAt'] != null;
 
         return Scaffold(
       body: Container(
@@ -327,21 +329,34 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                             ),
                             const SizedBox(height: 16),
 
-                            // 3. AR Game (Locked)
+                            // 3. AR Game (Unlocked after quiz)
                             GestureDetector(
-                              onTap: () => _showLockedDialog(context, isQuiz: false),
+                              onTap: () {
+                                if (!quizCompleted) {
+                                  _showLockedDialog(context, isQuiz: false);
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => GameScreen(nodeTitle: widget.nodeTitle),
+                                    ),
+                                  );
+                                }
+                              },
                               child: _buildTaskItem(
                                 number: '3',
                                 title: 'لعبة الواقع\nالافتراضي',
-                                subtitle: 'مقفل 🔒',
-                                icon: Icons.smartphone_rounded,
-                                iconBgColor: const Color(0xFFF1F5F9),
-                                iconColor: const Color(0xFF94A3B8),
+                                subtitle: quizCompleted ? 'ابدأ اللعبة' : 'مقفل 🔒',
+                                icon: quizCompleted ? Icons.sports_esports_rounded : Icons.smartphone_rounded,
+                                iconBgColor: quizCompleted ? const Color(0xFFF3E8FF) : const Color(0xFFF1F5F9),
+                                iconColor: quizCompleted ? const Color(0xFF9000FF) : const Color(0xFF94A3B8),
                                 pillColor: const Color(0xFFB794F6),
-                                cardBgColor: const Color(0xFFF8FAF9),
-                                borderColor: const Color(0xFFE2E8F0).withValues(alpha: 0.5),
-                                isLocked: true,
-                                subtitleColor: const Color(0xFF94A3B8),
+                                cardBgColor: quizCompleted ? Colors.white : const Color(0xFFF8FAF9),
+                                borderColor: quizCompleted
+                                    ? const Color(0xFF9000FF).withValues(alpha: 0.25)
+                                    : const Color(0xFFE2E8F0).withValues(alpha: 0.5),
+                                isLocked: !quizCompleted,
+                                subtitleColor: quizCompleted ? const Color(0xFF9000FF) : const Color(0xFF94A3B8),
                               ),
                             ),
                           ],
@@ -544,7 +559,7 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
 
                 // Title
                 Text(
-                  isQuiz ? 'الاختبار مغلق!' : 'قريباً',
+                  isQuiz ? 'الاختبار مغلق!' : 'اللعبة مغلقة!',
                   style: GoogleFonts.cairo(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -555,9 +570,9 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
 
                 // Subtitle
                 Text(
-                  isQuiz 
+                  isQuiz
                     ? 'يجب عليك إكمال الدرس للوصول إلى الاختبار'
-                    : 'هذه الميزة ستكون متاحة قريباً',
+                    : 'يجب عليك إكمال الاختبار للوصول إلى اللعبة',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.cairo(
                     fontSize: 16.0,

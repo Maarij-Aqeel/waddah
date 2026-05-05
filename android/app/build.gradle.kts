@@ -9,7 +9,7 @@ plugins {
 android {
     namespace = "com.capstone.Waddah"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -21,11 +21,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.capstone.Waddah"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 29  // Required by unityLibrary (AR + IL2CPP)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -42,4 +39,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation(project(":unityLibrary"))
 }
