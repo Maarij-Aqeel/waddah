@@ -11,13 +11,13 @@ const List<String> _avatarEmojis = [
 ];
 
 class LessonVideosScreen extends StatelessWidget {
-  final String nodeTitle;
+  final String moduleTitle;
 
-  const LessonVideosScreen({super.key, required this.nodeTitle});
+  const LessonVideosScreen({super.key, required this.moduleTitle});
 
   @override
   Widget build(BuildContext context) {
-    final String userName = FirebaseAuth.instance.currentUser?.displayName ?? 'Noura khalid';
+    final String userName = FirebaseAuth.instance.currentUser?.displayName ?? 'userName';
 
     return Scaffold(
       body: Container(
@@ -168,7 +168,7 @@ class LessonVideosScreen extends StatelessWidget {
                     // Video 1
                     _buildVideoCard(
                       context: context,
-                      title: nodeTitle,
+                      title: moduleTitle,
                       duration: '1:30',
                       stars: '35',
                       onTap: () {
@@ -176,7 +176,7 @@ class LessonVideosScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => VideoPlayerScreen(
-                              videoTitle: nodeTitle,
+                              videoTitle: moduleTitle,
                               starsReward: 35,
                             ),
                           ),

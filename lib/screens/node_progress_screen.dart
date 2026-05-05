@@ -8,11 +8,11 @@ import 'quiz_screen.dart';
 import 'game_screen.dart';
 
 class NodeProgressScreen extends StatefulWidget {
-  final String nodeTitle;
-  
+  final String moduleTitle;
+
   const NodeProgressScreen({
     super.key,
-    required this.nodeTitle,
+    required this.moduleTitle,
   });
 
   @override
@@ -41,8 +41,8 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
-    final String userName = currentUser?.displayName ?? 'Noura khalid';
-    final stageKey = _stageKeyFromTitle(widget.nodeTitle);
+    final String userName = currentUser?.displayName ?? '';
+    final stageKey = _stageKeyFromTitle(widget.moduleTitle);
 
     if (currentUser == null) {
       return const Scaffold(body: Center(child: Text('يجب تسجيل الدخول')));
@@ -253,7 +253,7 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                           const Icon(Icons.menu_book_rounded, color: Color(0xFF9000FF), size: 28),
                           const SizedBox(width: 12),
                           Text(
-                            widget.nodeTitle,
+                            widget.moduleTitle,
                             style: GoogleFonts.cairo(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -274,7 +274,7 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => LessonVideosScreen(nodeTitle: widget.nodeTitle)),
+                                  MaterialPageRoute(builder: (context) => LessonVideosScreen(moduleTitle: widget.moduleTitle)),
                                 );
                               },
                               child: _buildTaskItem(
@@ -299,13 +299,13 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                                 if (!lessonCompleted) {
                                   _showLockedDialog(context, isQuiz: true);
                                 } else {
-                                  final stageKey = _stageKeyFromTitle(widget.nodeTitle);
+                                  final stageKey = _stageKeyFromTitle(widget.moduleTitle);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => QuizScreen(
                                         stageKey: stageKey,
-                                        stageTitle: widget.nodeTitle,
+                                        stageTitle: widget.moduleTitle,
                                       ),
                                     ),
                                   );
@@ -338,7 +338,7 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => GameScreen(nodeTitle: widget.nodeTitle),
+                                      builder: (context) => GameScreen(nodeTitle: widget.moduleTitle),
                                     ),
                                   );
                                 }
@@ -346,11 +346,11 @@ class _NodeProgressScreenState extends State<NodeProgressScreen> {
                               child: _buildTaskItem(
                                 number: '3',
                                 title: 'لعبة الواقع\nالافتراضي',
-                                subtitle: quizCompleted ? 'ابدأ اللعبة' : 'مقفل 🔒',
-                                icon: quizCompleted ? Icons.sports_esports_rounded : Icons.smartphone_rounded,
-                                iconBgColor: quizCompleted ? const Color(0xFFF3E8FF) : const Color(0xFFF1F5F9),
+                                subtitle: quizCompleted ? 'ابدأ الآن 🎮' : 'مقفل 🔒',
+                                icon: quizCompleted ? Icons.smartphone_rounded : Icons.lock_outline,
+                                iconBgColor: quizCompleted ? const Color(0xFFEDE9FE) : const Color(0xFFF1F5F9),
                                 iconColor: quizCompleted ? const Color(0xFF9000FF) : const Color(0xFF94A3B8),
-                                pillColor: const Color(0xFFB794F6),
+                                pillColor: quizCompleted ? const Color(0xFF9000FF) : const Color(0xFFB794F6),
                                 cardBgColor: quizCompleted ? Colors.white : const Color(0xFFF8FAF9),
                                 borderColor: quizCompleted
                                     ? const Color(0xFF9000FF).withValues(alpha: 0.25)

@@ -53,7 +53,7 @@ class FeedbackScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Text(
-              'أحسنت!',
+              'احسنت',
               style: GoogleFonts.cairo(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -76,7 +76,7 @@ class FeedbackScreen extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 13),
+                        color: Colors.black.withValues(alpha: 0.13),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -144,7 +144,7 @@ class FeedbackScreen extends StatelessWidget {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               ),
                               child: Text(
-                                'العودة للرئيسية',
+                                'الرئيسية',
                                 style: GoogleFonts.cairo(fontSize: 16, color: const Color(0xFF1F2937)),
                               ),
                             ),
