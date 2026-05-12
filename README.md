@@ -43,6 +43,13 @@ The app aims to make learning real-world skills fun and culturally relevant for 
       <sub>Pick an avatar, see nodes/medals/stars progress</sub>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <img src="images/27269.png" width="220" alt="Profile"/><br/>
+      <b>AR / Camera-game</b><br/>
+      <sub>Answer questions through interactive ar</sub>
+    </td>
+  </tr>
 </table>
 
 ### Unity AR Mini-Game
